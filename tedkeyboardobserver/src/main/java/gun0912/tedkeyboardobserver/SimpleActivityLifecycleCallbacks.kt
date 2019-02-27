@@ -11,7 +11,7 @@ abstract class SimpleActivityLifecycleCallbacks(private val targetActivity: Acti
     abstract fun onActivityDestroyed()
 
 
-    override fun onActivityCreated(activity: Activity, bundle: Bundle) {
+    override fun onActivityCreated(activity: Activity, bundle: Bundle?) {
         if (targetActivity == activity) {
             onActivityCreated()
         }
@@ -32,7 +32,7 @@ abstract class SimpleActivityLifecycleCallbacks(private val targetActivity: Acti
         // no-op
     }
 
-    override fun onActivitySaveInstanceState(activity: Activity, bundle: Bundle) {
+    override fun onActivitySaveInstanceState(activity: Activity, bundle: Bundle?) {
         // no-op
     }
 
