@@ -8,14 +8,21 @@ abstract class BaseKeyboardObserver(private val activity: Activity) {
 
     private val decorView = activity.window.decorView
 
-    private lateinit var onKeyboardListener: OnKeyboardListener
-    private var originalWindowHeight = getWindowHeight()
-    private fun getWindowHeight() = Rect().apply { decorView.getWindowVisibleDisplayFrame(this) }.bottom
     private val onGlobalLayoutListener: ViewTreeObserver.OnGlobalLayoutListener =
         ViewTreeObserver.OnGlobalLayoutListener { onGlobalLayout() }
 
+    private var lastVisibleDecorViewHeight = 0
+
+    private var minKeyboardHeightPx = 0
+
+    private lateinit var onKeyboardListener: OnKeyboardListener
+
+    private fun getWindowHeight() =
+        Rect().apply { decorView.getWindowVisibleDisplayFrame(this) }.height()
+
     private fun registerActivityLifecycleCallbacks() {
-        activity.application.registerActivityLifecycleCallbacks(object : SimpleActivityLifecycleCallbacks(activity) {
+        activity.application.registerActivityLifecycleCallbacks(object :
+            SimpleActivityLifecycleCallbacks(activity) {
             override fun onActivityCreated() {
                 this@BaseKeyboardObserver.onActivityCreated()
             }
@@ -26,22 +33,32 @@ abstract class BaseKeyboardObserver(private val activity: Activity) {
         })
     }
 
+    private fun onGlobalLayout() {
+        val visibleDecorViewHeight = getWindowHeight()
+        // Decide whether keyboard is visible from changing decor view height.
+        if (lastVisibleDecorViewHeight != 0) {
+            if (lastVisibleDecorViewHeight > visibleDecorViewHeight + minKeyboardHeightPx) {
+                // Notify listener about keyboard being shown.
+                minKeyboardHeightPx =
+                    ((lastVisibleDecorViewHeight - visibleDecorViewHeight) * 0.9).toInt()
+                onKeyboardListener.onKeyboardChange(true)
+            } else if (lastVisibleDecorViewHeight + minKeyboardHeightPx < visibleDecorViewHeight) {
+                // Notify listener about keyboard being hidden.
+                onKeyboardListener.onKeyboardChange(false)
+            }
+        }
+        // Save current decor view height for the next call.
+        lastVisibleDecorViewHeight = visibleDecorViewHeight
+    }
+
+
     protected fun internalListen(onKeyboardListener: OnKeyboardListener) {
         registerActivityLifecycleCallbacks()
         this.onKeyboardListener = onKeyboardListener
         decorView.viewTreeObserver.addOnGlobalLayoutListener(onGlobalLayoutListener)
     }
 
-
-    private fun onGlobalLayout() {
-        val currentWindowHeight = getWindowHeight()
-        val isShow = originalWindowHeight != currentWindowHeight
-        onKeyboardListener.onKeyboardChange(isShow)
-    }
-
-    protected open fun onActivityCreated() {
-        originalWindowHeight = getWindowHeight()
-    }
+    protected open fun onActivityCreated() {}
 
     protected open fun onActivityDestroyed() {
         decorView.viewTreeObserver.removeOnGlobalLayoutListener(onGlobalLayoutListener)
