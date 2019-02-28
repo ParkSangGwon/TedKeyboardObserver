@@ -2,6 +2,7 @@ package gun0912.tedkeyboardobserver
 
 import android.app.Activity
 import android.graphics.Rect
+import android.util.DisplayMetrics
 import android.view.ViewTreeObserver
 
 abstract class BaseKeyboardObserver(private val activity: Activity) {
@@ -13,7 +14,20 @@ abstract class BaseKeyboardObserver(private val activity: Activity) {
 
     private var lastVisibleDecorViewHeight = 0
 
-    private var minKeyboardHeightPx = 0
+    private val softKeyButtonHeight = {
+        val displayMetrics = DisplayMetrics()
+        activity.windowManager.defaultDisplay.getMetrics(displayMetrics)
+        val usableHeight = displayMetrics.heightPixels
+        activity.windowManager.defaultDisplay.getRealMetrics(displayMetrics)
+        val realHeight = displayMetrics.heightPixels
+        if (realHeight > usableHeight)
+            realHeight - usableHeight
+        else
+            0
+    }()
+
+    private var minKeyboardHeightPx = softKeyButtonHeight
+
 
     private lateinit var onKeyboardListener: OnKeyboardListener
 
@@ -40,7 +54,7 @@ abstract class BaseKeyboardObserver(private val activity: Activity) {
             if (lastVisibleDecorViewHeight > visibleDecorViewHeight + minKeyboardHeightPx) {
                 // Notify listener about keyboard being shown.
                 minKeyboardHeightPx =
-                    ((lastVisibleDecorViewHeight - visibleDecorViewHeight) * 0.9).toInt()
+                    ((lastVisibleDecorViewHeight - visibleDecorViewHeight) * 0.9).toInt() - softKeyButtonHeight
                 onKeyboardListener.onKeyboardChange(true)
             } else if (lastVisibleDecorViewHeight + minKeyboardHeightPx < visibleDecorViewHeight) {
                 // Notify listener about keyboard being hidden.
