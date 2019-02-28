@@ -71,11 +71,9 @@ If you think this library is useful, please press star button at upside.
 #### Kotlin
 ```kotlin
       TedKeyboardObserver(this)
-               .listen(object : BaseKeyboardObserver.OnKeyboardListener {
-                   override fun onKeyboardChange(isShow: Boolean) {
-                     // do something
-                   }
-               })
+               .listen { isShow ->
+                    // do something
+               }
 ```
 
 

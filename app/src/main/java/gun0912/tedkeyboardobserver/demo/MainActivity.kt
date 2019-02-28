@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import gun0912.tedkeyboardobserver.BaseKeyboardObserver
 import gun0912.tedkeyboardobserver.TedKeyboardObserver
 import gun0912.tedkeyboardobserver.TedRxKeyboardObserver
 
@@ -16,11 +15,10 @@ class MainActivity : AppCompatActivity() {
 
         val tvStatusNormal = findViewById<TextView>(R.id.tv_status_normal)
         TedKeyboardObserver(this)
-            .listen(object : BaseKeyboardObserver.OnKeyboardListener {
-                override fun onKeyboardChange(isShow: Boolean) {
-                    tvStatusNormal.text = "[Normal]Keyboard show: $isShow"
-                }
-            })
+            .listen {
+                tvStatusNormal.text = "[Normal]Keyboard show: $it"
+            }
+
 
         val tvStatusRx = findViewById<TextView>(R.id.tv_status_rx)
 
