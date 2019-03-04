@@ -2,6 +2,7 @@ package gun0912.tedkeyboardobserver
 
 import android.app.Activity
 import android.graphics.Rect
+import android.util.DisplayMetrics
 import android.view.ViewTreeObserver
 
 abstract class BaseKeyboardObserver(private val activity: Activity) {
@@ -12,7 +13,19 @@ abstract class BaseKeyboardObserver(private val activity: Activity) {
     private var originalWindowHeight = getWindowHeight()
     private fun getWindowHeight() = Rect().apply { decorView.getWindowVisibleDisplayFrame(this) }.bottom
     private val onGlobalLayoutListener: ViewTreeObserver.OnGlobalLayoutListener =
-        ViewTreeObserver.OnGlobalLayoutListener { onGlobalLayout() }
+            ViewTreeObserver.OnGlobalLayoutListener { onGlobalLayout() }
+
+    private var lastWindowHeight = getWindowHeight()
+    private val softKeyButtonHeight = {
+        val applicationDisplayHeight = DisplayMetrics().apply {
+            activity.windowManager.defaultDisplay.getMetrics(this)
+        }.heightPixels
+        val realDisplayHeight = DisplayMetrics().apply {
+            activity.windowManager.defaultDisplay.getRealMetrics(this)
+        }.heightPixels
+
+        realDisplayHeight - applicationDisplayHeight
+    }()
 
     private fun registerActivityLifecycleCallbacks() {
         activity.application.registerActivityLifecycleCallbacks(object : SimpleActivityLifecycleCallbacks(activity) {
@@ -35,9 +48,16 @@ abstract class BaseKeyboardObserver(private val activity: Activity) {
 
     private fun onGlobalLayout() {
         val currentWindowHeight = getWindowHeight()
+        if (isSoftKeyChanged()) {
+            lastWindowHeight = currentWindowHeight
+            return
+        }
+        lastWindowHeight = currentWindowHeight
         val isShow = originalWindowHeight != currentWindowHeight
         onKeyboardListener.onKeyboardChange(isShow)
     }
+
+    private fun isSoftKeyChanged() = Math.abs((lastWindowHeight - getWindowHeight())) == softKeyButtonHeight
 
     protected open fun onActivityCreated() {
         originalWindowHeight = getWindowHeight()
