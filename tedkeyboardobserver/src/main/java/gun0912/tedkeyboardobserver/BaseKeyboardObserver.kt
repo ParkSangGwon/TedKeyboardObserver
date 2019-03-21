@@ -8,12 +8,13 @@ import android.view.ViewTreeObserver
 abstract class BaseKeyboardObserver(private val activity: Activity) {
 
     private val decorView = activity.window.decorView
+    private var lastIsShow = false
 
     private lateinit var onKeyboardListener: OnKeyboardListener
     private var originalWindowHeight = getWindowHeight()
     private fun getWindowHeight() = Rect().apply { decorView.getWindowVisibleDisplayFrame(this) }.bottom
     private val onGlobalLayoutListener: ViewTreeObserver.OnGlobalLayoutListener =
-            ViewTreeObserver.OnGlobalLayoutListener { onGlobalLayout() }
+        ViewTreeObserver.OnGlobalLayoutListener { onGlobalLayout() }
 
     private var lastWindowHeight = getWindowHeight()
     private val softKeyButtonHeight = {
@@ -54,6 +55,10 @@ abstract class BaseKeyboardObserver(private val activity: Activity) {
         }
         lastWindowHeight = currentWindowHeight
         val isShow = originalWindowHeight != currentWindowHeight
+        if (lastIsShow == isShow) {
+            return
+        }
+        lastIsShow = isShow
         onKeyboardListener.onKeyboardChange(isShow)
     }
 
