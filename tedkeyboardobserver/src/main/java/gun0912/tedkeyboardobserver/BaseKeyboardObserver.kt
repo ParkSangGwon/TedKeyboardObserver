@@ -4,6 +4,7 @@ import android.app.Activity
 import android.graphics.Rect
 import android.util.DisplayMetrics
 import android.view.ViewTreeObserver
+import kotlin.math.absoluteValue
 
 abstract class BaseKeyboardObserver(private val activity: Activity) {
 
@@ -62,7 +63,7 @@ abstract class BaseKeyboardObserver(private val activity: Activity) {
         onKeyboardListener.onKeyboardChange(isShow)
     }
 
-    private fun isSoftKeyChanged() = Math.abs((lastWindowHeight - getWindowHeight())) == softKeyButtonHeight
+    private fun isSoftKeyChanged() = ((lastWindowHeight - getWindowHeight()).absoluteValue) == softKeyButtonHeight
 
     protected open fun onActivityCreated() {
         originalWindowHeight = getWindowHeight()
