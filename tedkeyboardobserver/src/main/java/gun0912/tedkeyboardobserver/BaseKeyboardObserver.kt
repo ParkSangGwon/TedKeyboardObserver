@@ -12,7 +12,7 @@ abstract class BaseKeyboardObserver(private val activity: Activity) {
     private var lastIsShow = false
 
     private lateinit var onKeyboardListener: OnKeyboardListener
-    private var originalWindowHeight = getWindowHeight()
+    private val originalWindowHeight by lazy { getWindowHeight() }
     private fun getWindowHeight() = Rect().apply { decorView.getWindowVisibleDisplayFrame(this) }.bottom
     private val onGlobalLayoutListener: ViewTreeObserver.OnGlobalLayoutListener =
         ViewTreeObserver.OnGlobalLayoutListener { onGlobalLayout() }
@@ -32,7 +32,7 @@ abstract class BaseKeyboardObserver(private val activity: Activity) {
     private fun registerActivityLifecycleCallbacks() {
         activity.application.registerActivityLifecycleCallbacks(object : SimpleActivityLifecycleCallbacks(activity) {
             override fun onActivityCreated() {
-                this@BaseKeyboardObserver.onActivityCreated()
+               // no-op
             }
 
             override fun onActivityDestroyed() {
@@ -64,10 +64,6 @@ abstract class BaseKeyboardObserver(private val activity: Activity) {
     }
 
     private fun isSoftKeyChanged() = ((lastWindowHeight - getWindowHeight()).absoluteValue) == softKeyButtonHeight
-
-    protected open fun onActivityCreated() {
-        originalWindowHeight = getWindowHeight()
-    }
 
     protected open fun onActivityDestroyed() {
         decorView.viewTreeObserver.removeOnGlobalLayoutListener(onGlobalLayoutListener)
