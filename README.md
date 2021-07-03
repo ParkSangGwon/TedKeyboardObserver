@@ -20,7 +20,7 @@
 
 
 ### Gradle
-[ ![Download](https://api.bintray.com/packages/tkdrnjs0912/maven/tedkeyboardobserver/images/download.svg) ](https://bintray.com/tkdrnjs0912/maven/tedkeyboardobserver/_latestVersion)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.ParkSangGwon/tedkeyboardobserver.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22io.github.ParkSangGwon%22%20AND%20a:%tedkeyboardobserver%22)
 ```gradle
 dependencies {
     implementation 'gun0912.ted:tedkeyboardobserver:x.y.z'
