@@ -23,8 +23,8 @@
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.ParkSangGwon/tedkeyboardobserver.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22io.github.ParkSangGwon%22%20AND%20a:%tedkeyboardobserver%22)
 ```gradle
 dependencies {
-    implementation 'gun0912.ted:tedkeyboardobserver:x.y.z'
-    //implementation 'gun0912.ted:tedkeyboardobserver:1.0.0-alpha2'
+    implementation 'io.github.ParkSangGwon:tedkeyboardobserver:x.y.z'
+    //implementation 'io.github.ParkSangGwon:tedkeyboardobserver:1.0.1'
 }
 
 ```
